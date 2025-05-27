@@ -1,0 +1,9 @@
+priorities:
+  - readability
+  - security
+  - performance
+excluded_files:
+  - tests/
+style_rules:
+  max_line_length: 88
+improvement_threshold: 0.5
