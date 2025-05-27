@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from app.utils import process_input, categorize_files, detect_project_structure
 from app.analyzer import analyze_code
 from app.improver import improve_code
@@ -7,64 +7,51 @@ from app.config_manager import load_config
 import os
 import logging
 
-# Create logs directory if it doesn't exist
-os.makedirs("logs", exist_ok=True)
+app = Flask(__name__, static_folder='../../frontend/build', static_url_path='/')
 
 # Configure logging
-logging.basicConfig(
-    filename='logs/review.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
-app = Flask(__name__)
+logging.basicConfig(filename='logs/review.log', level=logging.INFO)
 
 @app.route('/api/review', methods=['POST'])
 def review_code():
     data = request.get_json()
     input_path = data.get('input')
-    logging.info(f"Received review request for: {input_path}")
-    
     config = load_config()
-
+    
     try:
         input_dir = process_input(input_path)
-        logging.info(f"Processed input directory: {input_dir}")
-
         file_types = categorize_files(input_dir)
-        logging.info(f"Categorized files: {file_types}")
-
         structure = detect_project_structure(input_dir)
-        logging.info(f"Detected project structure: {structure}")
-
+        
         for file_path, language in file_types.items():
             if any(excluded in file_path for excluded in config["excluded_files"]) or language == "unsupported":
-                logging.info(f"Skipping excluded or unsupported file: {file_path}")
                 continue
-
-            logging.info(f"Analyzing file: {file_path} (Language: {language})")
+            logging.info(f"Analyzing {file_path} ({language})")
             analysis_report = analyze_code(file_path, language)
-
             output_path = file_path.replace("input", "output")
             improve_code(file_path, output_path, analysis_report, language)
-            logging.info(f"Improved file saved to: {output_path}")
-
             generate_report(file_path, output_path, analysis_report)
-            logging.info(f"Report generated for: {file_path}")
-
-        logging.info("Code review completed successfully.")
+        
         return jsonify({"message": "Code review completed", "output_dir": "output"})
-
     except Exception as e:
-        logging.error(f"Error during review: {str(e)}")
+        logging.error(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/health')
+def health():
+    return jsonify({"status": "ok"})
 
 @app.route('/api/webhook', methods=['POST'])
 def webhook():
-    logging.info("Webhook received")
     return jsonify({"message": "Webhook received"})
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    if path and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, 'index.html')
+
 if __name__ == "__main__":
-    logging.info("Starting Flask application...")
     port = int(os.getenv("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
