@@ -36,22 +36,21 @@ def review_code():
 
         structure = detect_project_structure(input_dir)
         logging.info(f"Detected project structure: {structure}")
-        
-        for file_path, file_type in file_types.items():
-            if any(excluded in file_path for excluded in config["excluded_files"]):
-                logging.info(f"Excluded file: {file_path}")
+
+        for file_path, language in file_types.items():
+            if any(excluded in file_path for excluded in config["excluded_files"]) or language == "unsupported":
+                logging.info(f"Skipping excluded or unsupported file: {file_path}")
                 continue
 
-            if file_type.startswith("text/x-python"):
-                logging.info(f"Analyzing file: {file_path}")
-                analysis_report = analyze_code(file_path)
+            logging.info(f"Analyzing file: {file_path} (Language: {language})")
+            analysis_report = analyze_code(file_path, language)
 
-                output_path = file_path.replace("input", "output")
-                improve_code(file_path, output_path, analysis_report)
-                logging.info(f"Improved file saved to: {output_path}")
+            output_path = file_path.replace("input", "output")
+            improve_code(file_path, output_path, analysis_report, language)
+            logging.info(f"Improved file saved to: {output_path}")
 
-                generate_report(file_path, output_path, analysis_report)
-                logging.info(f"Report generated for: {file_path}")
+            generate_report(file_path, output_path, analysis_report)
+            logging.info(f"Report generated for: {file_path}")
 
         logging.info("Code review completed successfully.")
         return jsonify({"message": "Code review completed", "output_dir": "output"})
