@@ -3,27 +3,23 @@ import zipfile
 import git
 import shutil
 import magic
-import yaml
 
 def process_input(input_path, temp_dir="input"):
     """Handle input codebases (ZIP, Git, folder)."""
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
     
-    # Handle ZIP files
     if input_path.endswith(".zip"):
         with zipfile.ZipFile(input_path, 'r') as zip_ref:
             zip_ref.extractall(temp_dir)
         return temp_dir
     
-    # Handle Git repositories
     if input_path.startswith("http") or input_path.startswith("git@"):
         repo_name = input_path.split("/")[-1].replace(".git", "")
         repo_path = os.path.join(temp_dir, repo_name)
         git.Repo.clone_from(input_path, repo_path)
         return repo_path
     
-    # Handle local folder
     if os.path.isdir(input_path):
         dest_path = os.path.join(temp_dir, os.path.basename(input_path))
         shutil.copytree(input_path, dest_path, dirs_exist_ok=True)
@@ -39,7 +35,12 @@ def categorize_files(directory):
             file_path = os.path.join(root, file)
             mime = magic.Magic(mime=True)
             file_type = mime.from_file(file_path)
-            file_types[file_path] = file_type
+            if file_type.startswith("text/x-python"):
+                file_types[file_path] = "python"
+            elif file_type in ["text/javascript", "application/javascript"]:
+                file_types[file_path] = "javascript"
+            else:
+                file_types[file_path] = "unsupported"
     return file_types
 
 def detect_project_structure(directory):
@@ -47,10 +48,14 @@ def detect_project_structure(directory):
     structure = {"files": [], "dependencies": {}, "build_config": None}
     for root, _, files in os.walk(directory):
         for file in files:
-            structure["files"].append(os.path.join(root, file))
+            file_path = os.path.join(root, file)
+            structure["files"].append(file_path)
             if file == "requirements.txt":
-                with open(os.path.join(root, file), 'r') as f:
+                with open(file_path, 'r') as f:
                     structure["dependencies"]["python"] = f.read().splitlines()
-            elif file == "pyproject.toml":
-                structure["build_config"] = "pyproject.toml"
+            elif file == "package.json":
+                with open(file_path, 'r') as f:
+                    structure["dependencies"]["javascript"] = f.read()
+            elif file in ["pyproject.toml", "package.json"]:
+                structure["build_config"] = file
     return structure
