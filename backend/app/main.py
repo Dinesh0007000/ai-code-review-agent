@@ -67,4 +67,5 @@ def webhook():
 
 if __name__ == "__main__":
     logging.info("Starting Flask application...")
-    app.run(debug=True)
+    port = int(os.getenv("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False)
