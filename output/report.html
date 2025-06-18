@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Code Review Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            margin: 10px 0;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Code Review Report</h1>
+    
+    <h2>File: test.js</h2>
+    <ul>
+        
+        <li>Lint: /home/dk/ai_code_review_agent/temp_codebase/test.js: line 1, col 10, Error - 'hello' is defined but never used. (no-unused-vars)</li>
+        
+        <li>Lint: </li>
+        
+        <li>Lint: 1 problem</li>
+        
+        <li>Metrics: {'lines_of_code': 3, 'complexity': 'Not calculated for non-Python files'}</li>
+        
+    </ul>
+    
+    <h2>File: test.py</h2>
+    <ul>
+        
+        <li>Lint: temp_codebase/test.py:2:5: F821 undefined name 'prin'</li>
+        
+        <li>Lint: temp_codebase/test.py:2:26: W292 no newline at end of file</li>
+        
+        <li>Metrics: {'lines_of_code': 2, 'complexity': 1.0}</li>
+        
+    </ul>
+    
+    <h2>File: test.java</h2>
+    <ul>
+        
+        <li>Lint: temp_codebase/test.java:1:	NoPackage:	All classes, interfaces, enums and annotations must belong to a named package</li>
+        
+        <li>Lint: temp_codebase/test.java:1:	UseUtilityClass:	All methods are static.  Consider using a utility class instead. Alternatively, you could add a private constructor or make the class abstract to silence this warning.</li>
+        
+        <li>Metrics: {'lines_of_code': 5, 'complexity': 'Not calculated for non-Python files'}</li>
+        
+    </ul>
+    
+    <h2>Refactoring</h2>
+    <ul>
+        
+        <li>Added JSDoc to function in test.js</li>
+        
+        <li>Failed to parse line number for no-unused-vars in test.js</li>
+        
+        <li>Added docstring to function in test.py</li>
+        
+        <li>Added newline at end of file in test.py</li>
+        
+        <li>Added Javadoc to method in test.java</li>
+        
+        <li>Added package declaration in test.java</li>
+        
+        <li>Added private constructor for utility class in test.java</li>
+        
+    </ul>
+    <h2>Corrections</h2>
+    <ul>
+        
+        <li>Corrected errors in sample_codebase/temp_codebase/test.js</li>
+        
+        <li>Corrected errors in sample_codebase/temp_codebase/test.py</li>
+        
+        <li>Corrected errors in sample_codebase/temp_codebase/test.java</li>
+        
+    </ul>
+</body>
+
+</html>

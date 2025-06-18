@@ -1,0 +1,25 @@
+{
+    "supported_languages": [
+        "python",
+        "java",
+        "javascript"
+    ],
+    "exclude_paths": [
+        "__pycache__",
+        ".git",
+        "node_modules",
+        "venv"
+    ],
+    "analysis_tools": {
+        "python": [
+            "flake8",
+            "bandit"
+        ],
+        "java": [
+            "pmd"
+        ],
+        "javascript": [
+            "eslint"
+        ]
+    }
+}

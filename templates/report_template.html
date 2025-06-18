@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Code Review Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            margin: 10px 0;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Code Review Report</h1>
+    {% for issue in report_data.issues %}
+    <h2>File: {{ issue.file | replace('temp_codebase/', '') }}</h2>
+    <ul>
+        {% for i in issue.issues %}
+        <li>{{ i.type | capitalize }}: {{ i.message if i.message else i.data }}</li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+    <h2>Refactoring</h2>
+    <ul>
+        {% for r in report_data.refactoring %}
+        <li>{{ r }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Corrections</h2>
+    <ul>
+        {% for c in report_data.corrections %}
+        <li>{{ c }}</li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>
